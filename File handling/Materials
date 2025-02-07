@@ -1,0 +1,108 @@
+# List to store materials as dictionaries
+materials_list = []
+
+# Function to add a new material
+def add_material():
+    # Get the material details from the user
+    material_name = input("Enter material name: ")
+    quantity = input("Enter quantity: ")
+    unit = input("Enter unit (e.g., kg, meter, pieces): ")
+    price_per_unit = input("Enter price per unit: ")
+
+    # Store the material details as a dictionary
+    material = {
+        "name": material_name,
+        "quantity": quantity,
+        "unit": unit,
+        "price_per_unit": price_per_unit
+    }
+    
+    # Append the new material to the materials list
+    materials_list.append(material)
+    print("Material added successfully!")
+
+# Function to view all materials
+def view_materials():
+    if not materials_list:
+        print("No materials available yet.")
+        return
+    
+    print("\nList of Materials Required:")
+    for material in materials_list:
+        print(f"Material: {material['name']}, Quantity: {material['quantity']}, Unit: {material['unit']}, Price per Unit: {material['price_per_unit']}")
+
+# Function to update material details (e.g., quantity or price)
+def update_material():
+    if not materials_list:
+        print("No materials to update.")
+        return
+    
+    material_name = input("\nEnter the material name you want to update: ")
+    material_found = False
+    
+    for material in materials_list:
+        if material["name"].lower() == material_name.lower():
+            material_found = True
+            print(f"Material found: {material_name}")
+            quantity = input("Enter new quantity: ")
+            unit = input("Enter new unit (e.g., kg, meter, pieces): ")
+            price_per_unit = input("Enter new price per unit: ")
+
+            # Update material details
+            material["quantity"] = quantity
+            material["unit"] = unit
+            material["price_per_unit"] = price_per_unit
+            print(f"Material '{material_name}' updated successfully!")
+            break
+
+    if not material_found:
+        print("Material not found!")
+
+# Function to delete a material
+def delete_material():
+    if not materials_list:
+        print("No materials to delete.")
+        return
+    
+    material_name = input("\nEnter the material name you want to delete: ")
+    material_found = False
+
+    for material in materials_list:
+        if material["name"].lower() == material_name.lower():
+            material_found = True
+            materials_list.remove(material)
+            print(f"Material '{material_name}' deleted successfully!")
+            break
+
+    if not material_found:
+        print("Material not found!")
+
+# Main function
+def main():
+    while True:
+        # Display options to the user
+        print("\nConstruction Material Management System")
+        print("1. Add new material")
+        print("2. View all materials")
+        print("3. Update a material")
+        print("4. Delete a material")
+        print("5. Exit")
+
+        choice = input("\nEnter your choice: ")
+
+        if choice == '1':
+            add_material()
+        elif choice == '2':
+            view_materials()
+        elif choice == '3':
+            update_material()
+        elif choice == '4':
+            delete_material()
+        elif choice == '5':
+            print("Exiting the system...")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main()
