@@ -1,0 +1,42 @@
+def append_text_to_file(file_path, text):
+    # Open the file in append mode
+    with open(file_path, 'a') as file:
+        file.write(text + '\n')  # Adding a newline for better readability
+    print(f"Text appended to {file_path}")
+
+def main():
+    # Get the file path from the user
+    file_path = get_file_path()
+
+    # Check if the file exists, create if necessary
+    check_and_create_file(file_path)
+
+    # List to store user inputs
+    user_inputs = []
+
+    while True:
+        # Example usage
+        text = input("Enter the text to append to the file (or 'exit' to quit): ")
+        if text.lower() == 'exit':
+            break
+        user_inputs.append(text)
+        append_text_to_file(file_path, text)
+
+    # Print all user inputs
+    print("\nAll inputs:")
+    for item in user_inputs:
+        print(item)
+
+# Assuming get_file_path and check_and_create_file are defined elsewhere in your code
+def get_file_path():
+    return "C:/University/me.txt"
+
+def check_and_create_file(file_path):
+    try:
+        with open(file_path, 'x') as file:
+            pass
+    except FileExistsError:
+        pass
+
+if __name__ == "__main__":
+    main()
