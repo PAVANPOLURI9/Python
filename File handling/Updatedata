@@ -1,0 +1,111 @@
+import os
+
+# File path to store pizza orders
+ORDER_FILE = "pizza_orders.txt"
+
+# Function to display the menu options
+def display_menu():
+    print("\nPizza Store Management System")
+    print("1. Add new order")
+    print("2. View all orders")
+    print("3. Update an existing order")
+    print("4. Delete an order")
+    print("5. Exit")
+
+# Function to read orders from the file
+def read_orders():
+    if not os.path.exists(ORDER_FILE):
+        return []
+    with open(ORDER_FILE, 'r') as file:
+        orders = [line.strip() for line in file.readlines()]
+    return orders
+
+# Function to write orders to the file
+def write_orders(orders):
+    with open(ORDER_FILE, 'w') as file:
+        for order in orders:
+            file.write(order + "\n")
+
+# Function to add a new order
+def add_order():
+    name = input("Enter customer's name: ")
+    pizza_type = input("Enter pizza type: ")
+    quantity = input("Enter quantity: ")
+    order_date = input("Enter order date (YYYY-MM-DD): ")
+
+    # Create the order record and append to the orders list
+    order = f"Customer: {name}, Pizza: {pizza_type}, Quantity: {quantity}, Date: {order_date}"
+    orders = read_orders()
+    orders.append(order)
+    write_orders(orders)
+    print("Order added successfully!")
+
+# Function to view all orders
+def view_orders():
+    orders = read_orders()
+    if not orders:
+        print("No orders available.")
+    else:
+        print("\nList of Orders:")
+        for idx, order in enumerate(orders, start=1):
+            print(f"{idx}. {order}")
+
+# Function to update an order
+def update_order():
+    view_orders()
+    try:
+        order_id = int(input("\nEnter the order number you want to update: "))
+        orders = read_orders()
+        if 0 < order_id <= len(orders):
+            print("\nEnter new details for the order:")
+            name = input("Enter customer's name: ")
+            pizza_type = input("Enter pizza type: ")
+            quantity = input("Enter quantity: ")
+            order_date = input("Enter order date (YYYY-MM-DD): ")
+
+            # Update the order
+            orders[order_id - 1] = f"Customer: {name}, Pizza: {pizza_type}, Quantity: {quantity}, Date: {order_date}"
+            write_orders(orders)
+            print("Order updated successfully!")
+        else:
+            print("Invalid order number.")
+    except ValueError:
+        print("Please enter a valid number.")
+
+# Function to delete an order
+def delete_order():
+    view_orders()
+    try:
+        order_id = int(input("\nEnter the order number you want to delete: "))
+        orders = read_orders()
+        if 0 < order_id <= len(orders):
+            orders.pop(order_id - 1)  # Remove the selected order
+            write_orders(orders)
+            print("Order deleted successfully!")
+        else:
+            print("Invalid order number.")
+    except ValueError:
+        print("Please enter a valid number.")
+
+# Main function to run the system
+def main():
+    while True:
+        display_menu()
+        choice = input("\nEnter your choice: ")
+
+        if choice == '1':
+            add_order()
+        elif choice == '2':
+            view_orders()
+        elif choice == '3':
+            update_order()
+        elif choice == '4':
+            delete_order()
+        elif choice == '5':
+            print("Exiting the system...")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main()
