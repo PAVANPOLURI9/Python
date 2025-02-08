@@ -1,0 +1,20 @@
+# Point 6: Adding Elements to a List - Inventory Management (Stock Addition)
+stock_items = [f"Item_{i}" for i in range(1, 1001)]  # 1000 items in stock
+print("Initial Stock:", stock_items[:5])
+
+# Adding new products to the stock
+new_products = [f"NewItem_{i}" for i in range(1001, 1051)]  # Add 50 new products
+stock_items.extend(new_products)  # Adding the new products to the list
+
+print("Updated Stock after Adding New Products:", stock_items[1000:1050])
+
+# Point 7: Removing Elements from a List - Software Subscription Management (Cancellation)
+active_subscriptions = [f"User_{i}" for i in range(1, 501)]  # 500 active subscriptions
+print("First 5 Active Subscriptions:", active_subscriptions[:5])
+
+user_to_cancel = "User_250"
+if user_to_cancel in active_subscriptions:
+    active_subscriptions.remove(user_to_cancel)
+    print(f"{user_to_cancel} has been removed from active subscriptions.")
+else:
+    print(f"{user_to_cancel} not found in active subscriptions.")
