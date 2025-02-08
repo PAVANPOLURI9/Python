@@ -1,0 +1,63 @@
+# Point 1: Basic List - E-commerce Platform (Product List)
+product_ids = [f"prod_{i}" for i in range(1, 1001)]  # List of product IDs from prod_1 to prod_1000
+print("First 10 Product IDs:", product_ids[:10])  # Display first 10 product IDs for brevity
+
+# Business Logic: Find a specific product
+product_to_find = "prod_500"
+if product_to_find in product_ids:
+    print(f"{product_to_find} is available.")
+else:
+    print(f"{product_to_find} not found.")
+
+# Point 2: List with Mixed Data Types - HR System (Employee Information)
+employees = [
+    {"name": f"Employee_{i}", "age": 30 + (i % 5), "department": "HR" if i % 2 == 0 else "Tech", "active": i % 3 != 0}
+    for i in range(1, 501)  # 500 employees
+]
+for employee in employees[:5]:
+    print(employee)
+
+tech_employees = [emp for emp in employees if emp["department"] == "Tech"]
+print(f"Number of employees in Tech department: {len(tech_employees)}")
+
+# Point 3: List of Lists - IT Project Management (Task Breakdown)
+project_tasks = [
+    [f"Task_{i}_{j}" for j in range(1, 11)]  # 10 tasks in each stage
+    for i in range(1, 11)  # 10 stages
+]
+print("Stage 1 Tasks:", project_tasks[0])
+
+task_to_find = "Task_5_3"
+task_found = False
+for stage in project_tasks:
+    if task_to_find in stage:
+        task_found = True
+        print(f"Found {task_to_find} in the project.")
+        break
+if not task_found:
+    print(f"{task_to_find} not found in the project.")
+
+# Point 4: Accessing List Elements - IT Help Desk (Ticket Management)
+tickets = [
+    {"ticket_id": f"Ticket_{i}", "issue": f"Issue {i}", "status": "Resolved" if i % 2 == 0 else "Open"}
+    for i in range(1, 1001)  # 1000 tickets
+]
+print("First 5 Tickets:")
+for ticket in tickets[:5]:
+    print(ticket)
+
+unresolved_tickets = [ticket for ticket in tickets if ticket["status"] == "Open"]
+print(f"Number of unresolved tickets: {len(unresolved_tickets)}")
+
+# Point 5: Slicing Lists - Financial Report (Revenue Breakdown)
+monthly_revenue = [round(5000 + (i * 200), 2) for i in range(12)]  # Revenue increasing each month
+print("Monthly Revenue Data:", monthly_revenue)
+
+q1_revenue = monthly_revenue[:3]
+q2_revenue = monthly_revenue[3:6]
+q3_revenue = monthly_revenue[6:9]
+q4_revenue = monthly_revenue[9:]
+print(f"Q1 Revenue: {sum(q1_revenue)}")
+print(f"Q2 Revenue: {sum(q2_revenue)}")
+print(f"Q3 Revenue: {sum(q3_revenue)}")
+print(f"Q4 Revenue: {sum(q4_revenue)}")
