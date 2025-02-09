@@ -1,0 +1,33 @@
+# Class definition for Financial Advisor
+class FinancialAdvisor:
+    # Constructor to initialize client details
+    def __init__(self, client_name, investment_amount):
+        self.client_name = client_name       # Name of the client
+        self.investment_amount = investment_amount  # Initial investment amount
+    
+    # Method to calculate ROI based on interest rate and time period
+    def calculate_roi(self, interest_rate, time_period):
+        # Formula for simple interest: ROI = P * R * T / 100
+        roi = (self.investment_amount * interest_rate * time_period) / 100
+        return roi
+    
+    # Method to display the client's investment summary
+    def display_summary(self, interest_rate, time_period):
+        roi = self.calculate_roi(interest_rate, time_period)
+        total_value = self.investment_amount + roi
+        print(f"Investment Summary for {self.client_name}:")
+        print(f"Initial Investment: ${self.investment_amount}")
+        print(f"Interest Rate: {interest_rate}%")
+        print(f"Time Period: {time_period} years")
+        print(f"Return on Investment: ${roi:.2f}")
+        print(f"Total Investment Value after {time_period} years: ${total_value:.2f}")
+        print("-" * 50)
+
+
+# Example of creating an object and using the class
+
+# Create a FinancialAdvisor object for a client
+client1 = FinancialAdvisor("John Doe", 10000)  # Client's name and investment amount
+
+# Display investment summary for the client
+client1.display_summary(5, 3)  # 5% interest rate for 3 years
