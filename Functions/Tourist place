@@ -1,0 +1,34 @@
+# Dictionary to track visits
+tourist_visits = {}
+
+# Function to record a tourist's visit to a place
+def record_visit(tourist_name, place_name, num_visits=1, age=None, time_of_visit="Morning"):
+    if tourist_name not in tourist_visits:
+        tourist_visits[tourist_name] = {}
+    
+    if place_name not in tourist_visits[tourist_name]:
+        tourist_visits[tourist_name][place_name] = {'num_visits': 0, 'age': age, 'time_of_visit': time_of_visit}
+    
+    # Update the number of visits for the given tourist and place
+    tourist_visits[tourist_name][place_name]['num_visits'] += num_visits
+    tourist_visits[tourist_name][place_name]['time_of_visit'] = time_of_visit
+    
+    # Display the visit information
+    print(f"{tourist_name} visited {place_name} {num_visits} time(s).")
+    if age:
+        print(f"Age of {tourist_name}: {age}")
+    print(f"Time of visit: {time_of_visit}")
+    
+# Example usage:
+
+# Positional and Keyword Arguments:
+record_visit("Alice", "Eiffel Tower", 3, age=30, time_of_visit="Evening")
+
+# Positional Arguments with Default Argument for 'num_visits' and 'age':
+record_visit("Bob", "Grand Canyon", 2, time_of_visit="Afternoon")
+
+# Positional Arguments with Default Arguments for 'num_visits' and 'time_of_visit'
+record_visit("Charlie", "Great Wall of China", 1)
+
+# Positional and Keyword Arguments for a new place
+record_visit("Alice", "Eiffel Tower", num_visits=2, time_of_visit="Morning")
