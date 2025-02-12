@@ -1,0 +1,118 @@
+import numpy as np
+import math
+import time
+import random
+
+# Class to manage customer-related information and interactions
+class Customer:
+    def __init__(self, name, customer_id, is_student=False):
+        self.name = name
+        self.customer_id = customer_id
+        self.is_student = is_student
+        self.loyalty_points = 0
+        self.request_history = []  # To store requests
+        
+    def request_ride(self, region):
+        """Request a ride and calculate the estimated price."""
+        ride = Ride(self, region)
+        self.request_history.append(ride)
+        price = ride.calculate_price()
+        print(f"{self.name} requested a ride in Region {region}. Price: ${price}")
+        return ride
+
+    def add_loyalty_points(self, points):
+        """Add loyalty points for the customer."""
+        self.loyalty_points += points
+        print(f"{self.name} now has {self.loyalty_points} loyalty points.")
+
+# Class for managing ride requests
+class Ride:
+    def __init__(self, customer, region, ride_id=None):
+        self.customer = customer
+        self.region = region
+        self.ride_id = ride_id or f"R{random.randint(1000, 9999)}"
+        self.status = "Pending"
+        self.price = 0
+        
+    def calculate_price(self):
+        """Calculate standard price for ride (fixed)."""
+        self.price = 15  # Fixed price regardless of traffic, weather, etc.
+        return self.price
+
+    def update_status(self, status):
+        """Update ride status."""
+        self.status = status
+        print(f"Ride {self.ride_id} status updated to: {self.status}")
+
+# Class to manage driver allocation and arrival time optimization
+class Driver:
+    def __init__(self, driver_id, region):
+        self.driver_id = driver_id
+        self.region = region
+        self.is_available = True
+        
+    def allocate_driver(self, customer):
+        """Simulate driver allocation based on customer location and demand prediction."""
+        arrival_time = random.randint(5, 15)  # Random arrival time between 5 and 15 minutes
+        print(f"Driver {self.driver_id} allocated to {customer.name} in Region {self.region}. Estimated arrival: {arrival_time} minutes.")
+        return arrival_time
+
+# Support class to handle customer queries instantly
+class Support:
+    def __init__(self):
+        self.query_log = []
+
+    def receive_query(self, customer, query):
+        """Simulate immediate response to a customer query."""
+        timestamp = time.ctime()
+        response = f"Query received from {customer.name}: {query}. Response: Your query is being processed. Thank you!"
+        self.query_log.append((timestamp, customer.name, query, response))
+        print(f"Support: {response}")
+        return response
+
+# File Handling: Saving ride history to a file for future analysis
+def save_ride_history(customer):
+    """Save customer ride history to a file."""
+    with open("ride_history.txt", "a") as file:
+        for ride in customer.request_history:
+            file.write(f"Customer: {customer.name}, Ride ID: {ride.ride_id}, Region: {ride.region}, Price: ${ride.price}, Status: {ride.status}\n")
+
+# Vector Space for Regional Allocation (Simplified)
+def allocate_drivers_to_regions(region_data):
+    """Simulate driver allocation using vector spaces for regional distances."""
+    regions = np.array(region_data)  # 2D array (latitude, longitude) of regions
+    driver_positions = np.random.rand(len(regions), 2)  # Random positions of drivers in 2D space (latitude, longitude)
+    distances = np.linalg.norm(regions - driver_positions, axis=1)  # Calculate distances using Euclidean distance (vector space)
+    print(f"Driver distances from regions: {distances}")
+    return distances
+
+# Main code simulating the customer service improvement
+if __name__ == "__main__":
+    # Initialize some customers, drivers, and support team
+    customer1 = Customer(name="John", customer_id="C101", is_student=True)
+    customer2 = Customer(name="Jane", customer_id="C102")
+
+    driver1 = Driver(driver_id="D1001", region=1)
+    driver2 = Driver(driver_id="D1002", region=2)
+
+    support_team = Support()
+
+    # Simulate customer ride requests
+    ride1 = customer1.request_ride(region=1)
+    ride2 = customer2.request_ride(region=2)
+
+    # Allocate drivers based on regions
+    driver1.allocate_driver(customer1)
+    driver2.allocate_driver(customer2)
+
+    # Customer support interaction
+    support_team.receive_query(customer1, "I need a ride to the airport.")
+    support_team.receive_query(customer2, "Can I change the ride destination?")
+
+    # Save ride history to file
+    save_ride_history(customer1)
+    save_ride_history(customer2)
+
+    # Simulate region allocation using vector space for distances
+    region_data = [(12.9716, 77.5946), (13.0827, 80.2707), (19.0760, 72.8777)]  # Example region coordinates
+    allocate_drivers_to_regions(region_data)

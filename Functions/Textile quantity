@@ -1,0 +1,42 @@
+# Function to handle clothing order using *args and **kwargs
+def process_order(customer_name, *args, **kwargs):
+    print(f"Processing order for {customer_name}...")
+    total_amount = 0
+    
+    for product in args:
+        print(f"Product: {product}")
+    
+    # Handle additional details from kwargs
+    for product, details in kwargs.items():
+        print(f"Details for {product}:")
+        for detail, value in details.items():
+            print(f"  {detail}: {value}")
+        
+        # Calculate total price (assuming some base price for simplicity)
+        base_price = 50  # Base price for each item (just as an example)
+        quantity = details.get("quantity", 1)  # Default quantity is 1
+        discount = details.get("discount", 0)  # Default discount is 0%
+        price = base_price * quantity * (1 - discount / 100)  # Applying discount
+        
+        total_amount += price
+    
+    print(f"Total Amount for {customer_name}: ${total_amount:.2f}")
+    print("-" * 50)
+
+# Example usage:
+
+# Process order with multiple products and their details
+process_order(
+    "John Doe",
+    "T-shirt", "Jeans", "Jacket",  # *args for product names
+    T_shirt={"quantity": 2, "size": "M", "color": "Blue", "discount": 10},  # **kwargs for T-shirt details
+    Jeans={"quantity": 1, "size": "L", "color": "Black", "discount": 5},  # **kwargs for Jeans details
+    Jacket={"quantity": 1, "size": "XL", "color": "Red", "discount": 15}  # **kwargs for Jacket details
+)
+
+# Process order with a single product
+process_order(
+    "Jane Smith",
+    "Sweater",  # *args for product name
+    Sweater={"quantity": 3, "size": "S", "color": "Green", "discount": 20}  # **kwargs for Sweater details
+)

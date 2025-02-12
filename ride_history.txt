@@ -1,0 +1,14 @@
+Customer: John, Ride ID: R4585, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R1220, Region: 2, Price: $15, Status: Pending
+Customer: John, Ride ID: R3926, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R4171, Region: 2, Price: $15, Status: Pending
+Customer: John, Ride ID: R9801, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R4606, Region: 2, Price: $15, Status: Pending
+Customer: John, Ride ID: R5867, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R1658, Region: 2, Price: $15, Status: Pending
+Customer: John, Ride ID: R8220, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R5887, Region: 2, Price: $15, Status: Pending
+Customer: John, Ride ID: R8006, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R3333, Region: 2, Price: $15, Status: Pending
+Customer: John, Ride ID: R2636, Region: 1, Price: $15, Status: Pending
+Customer: Jane, Ride ID: R1165, Region: 2, Price: $15, Status: Pending
