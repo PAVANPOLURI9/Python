@@ -1,0 +1,29 @@
+# 1. *args and **kwargs Example - Adding citizen details
+class Citizen:
+    def __init__(self, name, age, **kwargs):
+        self.name = name  # Name is a positional argument
+        self.age = age  # Age is a positional argument
+        self.city = kwargs.get('city', 'Unknown')  # City is a keyword argument
+
+    def display(self):
+        print(f"Name: {self.name}, Age: {self.age}, City: {self.city}")
+
+# Creating an instance of Citizen using *args and **kwargs
+citizen = Citizen("Kane", 30, city="Nashua")
+citizen.display()
+
+# 2. Inheritance Example
+class Person:  # Parent class
+    def greet(self):
+        return "Hello, citizen!"
+
+class Taxpayer(Person):  # Child class
+    def greet(self):  # Polymorphism: Overriding the method
+        return "Hello, taxpayer!"
+
+# Using inheritance and polymorphism
+person = Person()
+taxpayer = Taxpayer()
+
+print(person.greet())  # Output: Hello, citizen!
+print(taxpayer.greet())  # Output: Hello, taxpayer!
