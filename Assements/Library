@@ -1,0 +1,50 @@
+from abc import ABC, abstractmethod
+
+# 1. LibraryItem - Base Class
+class LibraryItem(ABC):
+    def __init__(self, title, **kwargs):
+        self.title = title  # Title is a positional argument
+        self.author = kwargs.get('author', 'Unknown')  # Keyword argument
+        self.year = kwargs.get('year', 2000)  # Keyword argument
+
+    @abstractmethod
+    def display(self):
+        pass  # Abstract method, to be overridden by child classes
+
+# 2. Book - Child Class
+class Book(LibraryItem):
+    def __init__(self, title, **kwargs):
+        super().__init__(title, **kwargs)
+        self.isbn = kwargs.get('isbn', 'N/A')  # ISBN for books
+
+    def display(self):
+        print(f"Book Title: {self.title}, Author: {self.author}, Year: {self.year}, ISBN: {self.isbn}")
+
+# 3. Magazine - Child Class
+class Magazine(LibraryItem):
+    def __init__(self, title, **kwargs):
+        super().__init__(title, **kwargs)
+        self.issue_number = kwargs.get('issue_number', 'N/A')  # Issue number for magazines
+
+    def display(self):
+        print(f"Magazine Title: {self.title}, Author: {self.author}, Year: {self.year}, Issue Number: {self.issue_number}")
+
+# 4. Lambda and Map - Example to filter and transform
+items = [
+    Book("The Great Gatsby", author="F. Scott Fitzgerald", year=1925, isbn="12345"),
+    Magazine("Time", author="Time Inc.", year=2023, issue_number="45"),
+    Book("1984", author="George Orwell", year=1949, isbn="67890")
+]
+
+# Filter: Items published after 1950
+recent_items = filter(lambda item: item.year > 1950, items)
+
+# Map: Convert titles to uppercase
+uppercase_titles = map(lambda item: item.title.upper(), recent_items)
+
+# Display titles in uppercase
+print(list(uppercase_titles))
+
+# Display item details
+for item in items:
+    item.display()
