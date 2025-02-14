@@ -1,0 +1,21 @@
+# Simple authentication decorator
+def requires_login(func):
+    def wrapper(user):
+        if user.get("logged_in"):
+            return func(user)  # Call the original function if logged in
+        else:
+            print("Access denied! Please log in.")
+    return wrapper
+
+# Function to show dashboard
+@requires_login
+def show_dashboard(user):
+    print(f"Welcome to your dashboard, {user['name']}!")
+
+# Example users
+user1 = {"name": "Alice", "logged_in": True}  # Logged-in user
+user2 = {"name": "Bob", "logged_in": False}  # Not logged in
+
+# Test the function
+show_dashboard(user1)  # Should allow access
+show_dashboard(user2)  # Should deny access
