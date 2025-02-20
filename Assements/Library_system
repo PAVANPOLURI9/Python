@@ -1,0 +1,105 @@
+import numpy as np
+import random
+from statistics import mean, median, variance, stdev
+
+# Class for managing library members
+class LibraryMember:
+    def __init__(self, name, member_id):
+        self.name = name
+        self.member_id = member_id
+        self.borrowed_books = []  # List of books borrowed
+
+    def borrow_book(self, book):
+        """Simulate borrowing a book."""
+        self.borrowed_books.append(book)
+        print(f"{self.name} borrowed '{book}'.")
+
+    def return_book(self, book):
+        """Simulate returning a book."""
+        if book in self.borrowed_books:
+            self.borrowed_books.remove(book)
+            print(f"{self.name} returned '{book}'.")
+        else:
+            print(f"{self.name} did not borrow '{book}'.")
+
+# Class for managing the library system
+class LibrarySystem:
+    def __init__(self):
+        self.books = {"Fiction", "Science", "Math", "History", "Art"}  # Set of available books
+        self.members = []  # List of library members
+        self.borrow_data = []  # Track number of books borrowed
+
+    def add_member(self, member):
+        """Add a new library member."""
+        self.members.append(member)
+        print(f"Added new member: {member.name} (ID: {member.member_id})")
+
+    def show_books(self):
+        """Display all available books."""
+        print("Available books:", self.books)
+
+    def perform_set_operations(self, new_books):
+        """Perform set theory operations."""
+        new_books_set = set(new_books)
+        print("Union of books:", self.books.union(new_books_set))
+        print("Intersection of books:", self.books.intersection(new_books_set))
+        print("Difference of books:", self.books.difference(new_books_set))
+
+    def record_borrow(self, member, num_books):
+        """Record the number of books borrowed by a member."""
+        self.borrow_data.append(num_books)
+        print(f"Recorded {num_books} books borrowed by {member.name}.")
+
+    def analyze_borrowing_data(self):
+        """Calculate statistics on borrowing data."""
+        if not self.borrow_data:
+            print("No borrowing data available.")
+            return
+        print(f"Borrowing Mean: {mean(self.borrow_data)}")
+        print(f"Borrowing Median: {median(self.borrow_data)}")
+        print(f"Borrowing Variance: {variance(self.borrow_data)}")
+        print(f"Borrowing Standard Deviation: {stdev(self.borrow_data)}")
+
+    def bell_curve_simulation(self):
+        """Simulate and plot a bell curve based on borrowing data."""
+        if not self.borrow_data:
+            print("No borrowing data to simulate a bell curve.")
+            return
+        import matplotlib.pyplot as plt
+        data = np.random.normal(mean(self.borrow_data), stdev(self.borrow_data), 1000)
+        plt.hist(data, bins=30, density=True, alpha=0.6, color='skyblue')
+        plt.title("Bell Curve: Borrowing Data")
+        plt.xlabel("Number of Books Borrowed")
+        plt.ylabel("Probability Density")
+        plt.show()
+
+# Main simulation
+if __name__ == "__main__":
+    # Initialize the library system
+    library = LibrarySystem()
+
+    # Add library members
+    member1 = LibraryMember("Alice", "M101")
+    member2 = LibraryMember("Bob", "M102")
+    library.add_member(member1)
+    library.add_member(member2)
+
+    # Borrow and return books
+    member1.borrow_book("Fiction")
+    member1.borrow_book("Math")
+    member2.borrow_book("Science")
+    member1.return_book("Math")
+
+    # Record borrowing data
+    library.record_borrow(member1, 2)  # Alice borrowed 2 books
+    library.record_borrow(member2, 1)  # Bob borrowed 1 book
+
+    # Perform set operations
+    library.show_books()
+    library.perform_set_operations(["Math", "Programming", "Art"])
+
+    # Analyze borrowing data
+    library.analyze_borrowing_data()
+
+    # Simulate a bell curve
+    library.bell_curve_simulation()
