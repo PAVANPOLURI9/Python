@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Read the CSV file
-df = pd.read_csv("agriculture_data.csv")
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/NOTES/agriculture_data.csv")
 
 # Set a style for better visualization
 sns.set_style("whitegrid")
