@@ -1,0 +1,18 @@
+import webbrowser
+import time
+import pyautogui
+
+# Open YouTube in Chrome
+webbrowser.open("https://www.youtube.com")
+
+# Wait for YouTube to load
+time.sleep(3)
+
+# Click on the search bar (optional, usually focused by default)
+pyautogui.click(400, 200)  # Adjust coordinates based on your screen
+
+# Type "cricket"
+pyautogui.write("cricket", interval=0.1)
+
+# Press Enter
+pyautogui.press("enter")

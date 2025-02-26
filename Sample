@@ -1,9 +1,0 @@
-import pkgutil
-
-# List all modules
-modules = list(pkgutil.iter_modules())
-print(f"Total number of modules: {len(modules)}")
-
-# Print the names of the modules
-for module in modules[:10]:  # Limiting to the first 10 for brevity
-    print(module.name)
