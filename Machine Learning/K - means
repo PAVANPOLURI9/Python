@@ -1,0 +1,52 @@
+import numpy as np
+import pandas as pd
+
+# Simulated transaction data (1 = bought, 0 = not bought)
+data = {
+    'Laptop': [1, 1, 0, 1, 0, 1, 0, 1, 0, 1],
+    'Mouse':  [1, 1, 1, 0, 1, 1, 0, 1, 0, 1],
+}
+df = pd.DataFrame(data)
+
+def calculate_support(df, items):
+    """Calculate support for item(s)"""
+    if isinstance(items, str):
+        return df[items].mean()
+    else:
+        return df[items].all(axis=1).mean()
+
+def calculate_confidence(df, antecedent, consequent):
+    """Calculate confidence for a rule"""
+    support_antecedent = calculate_support(df, antecedent)
+    support_both = calculate_support(df, [antecedent, consequent])
+    return support_both / support_antecedent if support_antecedent > 0 else 0
+
+def calculate_lift(df, antecedent, consequent):
+    """Calculate lift for a rule"""
+    confidence = calculate_confidence(df, antecedent, consequent)
+    support_consequent = calculate_support(df, consequent)
+    return confidence / support_consequent if support_consequent > 0 else 0
+
+# Calculate support for individual items
+print("Support for individual items:")
+for item in df.columns:
+    support = calculate_support(df, item)
+    print(f"{item}: {support:.3f}")
+
+# Generate and analyze rules
+print("\nAssociation Rules:")
+items = df.columns.tolist()
+for i in range(len(items)):
+    for j in range(len(items)):
+        if i != j:
+            antecedent = items[i]
+            consequent = items[j]
+            support = calculate_support(df, [antecedent, consequent])
+            confidence = calculate_confidence(df, antecedent, consequent)
+            lift = calculate_lift(df, antecedent, consequent)
+            
+            if support >= 0.3:  # Min support threshold
+                print(f"\nRule: {antecedent} -> {consequent}")
+                print(f"Support: {support:.3f}")
+                print(f"Confidence: {confidence:.3f}")
+                print(f"Lift: {lift:.3f}")
