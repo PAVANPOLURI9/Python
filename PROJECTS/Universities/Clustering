@@ -1,0 +1,48 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_score, davies_bouldin_score
+
+# Load dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities.csv")  # Replace with your actual file name
+
+# Handle missing values
+df.fillna(df.median(numeric_only=True), inplace=True)
+
+# Select only numeric features for clustering
+df_numeric = df.select_dtypes(include=['int64', 'float64'])
+
+# Normalize the data
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(df_numeric)
+
+# Apply KMeans with K = 5
+kmeans = KMeans(n_clusters=5, random_state=42)
+cluster_labels = kmeans.fit_predict(scaled_data)
+
+# Add cluster labels to original DataFrame
+df['Cluster'] = cluster_labels
+
+# Analyze cluster sizes
+print("\n🧮 Number of Colleges in Each Cluster:")
+print(df['Cluster'].value_counts())
+
+# Cluster profile: average of each feature per cluster
+cluster_profile = df.groupby('Cluster').mean(numeric_only=True)
+
+print("\n📊 Cluster Profile (Feature Means by Cluster):")
+print(cluster_profile)
+
+# PCA for 2D visualization
+pca = PCA(n_components=2)
+pca_result = pca.fit_transform(scaled_data)
+df['PCA1'] = pca_result[:, 0]
+df['PCA2'] = pca_result[:, 1]
+
+sil_score = silhouette_score(scaled_data, df['Cluster'])
+dbi_score = davies_bouldin_score(scaled_data, df['Cluster'])
+
+print(f"✅ Silhouette Score: {sil_score:.4f} (closer to 1 is better)")
+print(f"✅ Davies-Bouldin Index: {dbi_score:.4f} (lower is better)")
+
