@@ -1,0 +1,48 @@
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Load cleaned and clustered dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities_FinalClustered.csv")
+
+# Define your cluster column (update this if using a different name)
+cluster_col = 'EstimatedCluster'
+
+# -----------------------------
+# 🔹 Public vs Private by Cluster
+# -----------------------------
+print("\n🔹 Public (1) / Private (2) Distribution by Cluster:")
+pubpriv_ct = pd.crosstab(df[cluster_col], df['Public (1)/ Private (2)'])
+print(pubpriv_ct)
+
+# Normalize to get percentages
+pubpriv_pct = pubpriv_ct.div(pubpriv_ct.sum(axis=1), axis=0)
+
+# Plot
+plt.figure(figsize=(8, 5))
+pubpriv_pct.plot(kind='bar', stacked=True, colormap='Set2')
+plt.title('Public vs Private Distribution per Cluster')
+plt.ylabel('Proportion')
+plt.xlabel('Cluster')
+plt.legend(title='Type (1 = Public, 2 = Private)')
+plt.tight_layout()
+plt.show()
+
+# -----------------------------
+# 🔹 State Distribution by Cluster (Top 10 states)
+# -----------------------------
+print("\n🔹 State Frequency per Cluster (Top 10 States):")
+top_states = df['State'].value_counts().head(10).index
+df_top_states = df[df['State'].isin(top_states)]
+
+state_ct = pd.crosstab(df_top_states[cluster_col], df_top_states['State'])
+print(state_ct)
+
+# Heatmap
+plt.figure(figsize=(10, 6))
+sns.heatmap(state_ct, annot=True, fmt='d', cmap='Blues')
+plt.title('Top 10 States by Cluster')
+plt.ylabel('Cluster')
+plt.xlabel('State')
+plt.tight_layout()
+plt.show()
