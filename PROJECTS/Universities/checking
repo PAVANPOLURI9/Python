@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+# Load final dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities_FinalClustered.csv")
+target_col = 'room'
+
+# Separate complete data
+df_complete = df[df[target_col].notnull()].copy()
+
+# Extract filled (imputed) rows only
+filled_rows = df.loc[df['EstimatedCluster'].notnull() & ~df.index.isin(df_complete.index)]
+
+if not filled_rows.empty:
+    sns.kdeplot(filled_rows[target_col], fill=True, label='Imputed Values')
+
+
+# KDE Plot Comparison
+plt.figure(figsize=(10, 5))
+sns.kdeplot(df_complete[target_col], fill=True, label='Original Complete')
+sns.kdeplot(filled_rows[target_col], fill=True, label='Imputed Values')
+plt.title(f"Distribution Comparison of '{target_col}' (Original vs Imputed)")
+plt.xlabel(target_col)
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Correlation Difference
+print("\n📊 Correlation Differences (Top):")
+corr_before = df_complete.select_dtypes(include=['float64', 'int64']).corr()
+corr_after = df.select_dtypes(include=['float64', 'int64']).corr()
+corr_diff = (corr_before - corr_after).abs().mean().sort_values(ascending=False)
+print(corr_diff.head(10))
+
+# Simulation: Mask some known values and re-fill
+df_sim = df_complete.copy()
+mask_indices = df_sim[target_col].sample(frac=0.2, random_state=42).index
+original_vals = df_sim.loc[mask_indices, target_col]
+df_sim.loc[mask_indices, target_col] = np.nan
+
+# Fill with median
+median_val = df_complete[target_col].median()
+df_sim[target_col] = df_sim[target_col].fillna(median_val)
+imputed_vals = df_sim.loc[mask_indices, target_col]
+
+# Compute RMSE manually (if older sklearn)
+rmse = np.sqrt(((original_vals - imputed_vals) ** 2).mean())
+mae = mean_absolute_error(original_vals, imputed_vals)
+
+print(f"\n✅ Imputation Simulation for '{target_col}':")
+print(f"RMSE: {rmse:.2f}")
+print(f"MAE : {mae:.2f}")
