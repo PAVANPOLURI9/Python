@@ -1,0 +1,57 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.cluster import DBSCAN
+
+# ✅ Load dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities.csv")
+df.fillna(df.median(numeric_only=True), inplace=True)
+
+# ✅ Select numeric columns & scale
+df_numeric = df.select_dtypes(include=['float64', 'int64'])
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(df_numeric)
+
+# ✅ Apply DBSCAN with tuned eps and min_samples
+eps = 2.2
+min_samples = 6
+dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+labels = dbscan.fit_predict(scaled_data)
+
+# ✅ Add cluster labels to the DataFrame
+df['DBSCAN_Tuned'] = labels
+
+# ✅ Cluster stats
+n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+n_noise = list(labels).count(-1)
+
+print(f"\n✅ Number of clusters found: {n_clusters}")
+print(f"❌ Number of noise points: {n_noise}")
+
+# ✅ Graduation Rate per Cluster (excluding noise)
+print("\n📊 Graduation Rate per DBSCAN Cluster:")
+print(df[df['DBSCAN_Tuned'] != -1].groupby('DBSCAN_Tuned')['Graduation rate'].mean())
+
+# ✅ PCA for 2D Visualization
+pca = PCA(n_components=2)
+pca_result = pca.fit_transform(scaled_data)
+df['PCA1'] = pca_result[:, 0]
+df['PCA2'] = pca_result[:, 1]
+
+print(f"\n✅ Number of clusters found: {n_clusters}")
+print(f"❌ Number of noise points: {n_noise}")
+print(df[df['DBSCAN_Tuned'] != -1].groupby('DBSCAN_Tuned')['Graduation rate'].mean())
+
+# ✅ Plot the Clusters
+plt.figure(figsize=(10, 6))
+sns.scatterplot(data=df, x='PCA1', y='PCA2', hue='DBSCAN_Tuned', palette='tab10', s=50)
+plt.title(f"📦 Tuned DBSCAN Clustering (eps={eps}, min_samples={min_samples})")
+plt.xlabel("PCA1")
+plt.ylabel("PCA2")
+plt.grid(True)
+plt.legend(title="Cluster")
+plt.tight_layout()
+plt.show()
