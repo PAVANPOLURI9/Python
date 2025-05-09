@@ -1,0 +1,32 @@
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities.csv")  # Replace with actual path
+
+# Fill missing values
+df.fillna(df.median(numeric_only=True), inplace=True)
+
+# Drop non-numeric columns if any (we’ll later discuss encoding for categorical if needed)
+df_numeric = df.select_dtypes(include=['int64', 'float64'])
+
+# Scaling
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(df_numeric)
+
+# Find optimal number of clusters using Elbow Method
+wcss = []
+for k in range(1, 11):
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(scaled_data)
+    wcss.append(kmeans.inertia_)
+
+# Plot Elbow Curve
+plt.plot(range(1, 11), wcss, marker='o')
+plt.xlabel('Number of Clusters (K)')
+plt.ylabel('WCSS')
+plt.title('Elbow Method For Optimal K')
+plt.show()
