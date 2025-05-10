@@ -1,0 +1,27 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
+
+# Load data
+df = pd.read_csv("C:/AI/Python/Time series/Apple/Apple_stock_2010_2024.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# First-order differencing
+df['Price_Diff'] = df['Price'] - df['Price'].shift(1)
+df.dropna(subset=['Price_Diff'], inplace=True)
+
+# Plot ACF and PACF
+plt.figure(figsize=(12, 5))
+plot_acf(df['Price_Diff'], lags=40)
+plt.title("ACF Plot (for q)")
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(12, 5))
+plot_pacf(df['Price_Diff'], lags=40, method='ywm')
+plt.title("PACF Plot (for p)")
+plt.tight_layout()
+plt.show()
