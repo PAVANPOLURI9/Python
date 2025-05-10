@@ -1,0 +1,56 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from scipy.spatial.distance import cdist
+
+# Load dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities_FinalClustered.csv")
+
+# Identify Tufts University row
+tufts = df[df['College Name'].str.contains("Tufts", case=False, na=False)].copy()
+print("📍 Tufts Row:\n", tufts)
+
+# Drop rows with missing values to get clean cluster data
+df_clean = df.dropna()
+
+# Extract continuous columns (exclude categorical)
+continuous_cols = [
+    '# appli. rec\'d', '# appl. accepted', '# new stud. enrolled',
+    '% new stud. from top 10%', '% new stud. from top 25%',
+    '# FT undergrad', '# PT undergrad',
+    'in-state tuition', 'out-of-state tuition', 'room', 'board',
+    'add. fees', 'estim. book costs', 'estim. personal $',
+    '% fac. w/PHD', 'stud./fac. ratio', 'Graduation rate'
+]
+
+# Normalize clean data
+scaler = StandardScaler()
+X_clean = scaler.fit_transform(df_clean[continuous_cols])
+
+# Group by EstimatedCluster
+cluster_centroids = df_clean.copy()
+cluster_centroids[continuous_cols] = X_clean
+cluster_profiles = cluster_centroids.groupby('EstimatedCluster')[continuous_cols].mean()
+
+# Prepare Tufts data
+tufts_scaled = scaler.transform(tufts[continuous_cols])
+tufts_available_mask = ~np.isnan(tufts_scaled[0])
+
+# Only use available features
+available_features = np.array(continuous_cols)[tufts_available_mask]
+tufts_values = tufts_scaled[0][tufts_available_mask]
+cluster_subset = cluster_profiles[available_features]
+
+# Calculate distances
+distances = cdist([tufts_values], cluster_subset.values, metric='euclidean')
+closest_cluster = cluster_subset.index[np.argmin(distances)]
+
+print(f"\n✅ Closest Cluster to Tufts: {closest_cluster}")
+
+# Impute missing values from that cluster’s mean
+tufts_imputed = tufts.copy()
+for col in continuous_cols:
+    if pd.isnull(tufts_imputed[col].values[0]):
+        tufts_imputed[col] = cluster_profiles.loc[closest_cluster, col] * scaler.scale_[continuous_cols.index(col)] + scaler.mean_[continuous_cols.index(col)]
+
+print("\n📦 Imputed Tufts Data:\n", tufts_imputed[continuous_cols])
