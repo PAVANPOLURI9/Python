@@ -1,0 +1,45 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVR
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
+
+# Step 1: Load and Prepare Data
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities_FinalClustered.csv")
+
+# Drop non-numeric columns or identifiers
+df = df.drop(columns=['College Name'], errors='ignore')
+
+# Drop rows with missing Graduation Rate (if any)
+df = df[df['Graduation rate'].notnull()]
+
+# Separate features and target
+X = df.drop(columns=['Graduation rate'])
+y = df['Graduation rate']
+
+# Step 2: Train-Test Split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Step 3: Train Models
+models = {
+    "Linear Regression": LinearRegression(),
+    "Decision Tree": DecisionTreeRegressor(random_state=42),
+    "Random Forest": RandomForestRegressor(random_state=42),
+    "Support Vector": SVR()
+}
+
+# Step 4: Evaluate Models
+for name, model in models.items():
+    model.fit(X_train, X_train)
+    preds = model.predict(X_test)
+    
+    rmse = mean_squared_error(y_test, preds, squared=False)
+    mae = mean_absolute_error(y_test, preds)
+    r2 = r2_score(y_test, preds)
+    
+    print(f"\n📌 {name}")
+    print(f"RMSE: {rmse:.2f}")
+    print(f"MAE : {mae:.2f}")
+    print(f"R²  : {r2:.4f}")
