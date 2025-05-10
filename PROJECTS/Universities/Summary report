@@ -1,0 +1,64 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from fcmeans import FCM
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering
+
+# ✅ Step 1: Load cleaned dataset
+df = pd.read_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities.csv")
+df.fillna(df.median(numeric_only=True), inplace=True)
+
+# ✅ Step 2: Select and scale numeric features
+df_numeric = df.select_dtypes(include=['float64', 'int64'])
+scaler = StandardScaler()
+scaled_data = scaler.fit_transform(df_numeric)
+
+# ✅ Step 3: Apply clustering methods
+
+## KMeans
+kmeans = KMeans(n_clusters=5, random_state=42)
+df['KMeansCluster'] = kmeans.fit_predict(scaled_data)
+
+## Hierarchical
+hc = AgglomerativeClustering(n_clusters=5)
+df['HierCluster'] = hc.fit_predict(scaled_data)
+
+## DBSCAN
+dbscan = DBSCAN(eps=2.2, min_samples=6)
+df['DBSCAN_Tuned'] = dbscan.fit_predict(scaled_data)
+
+## Fuzzy C-Means
+fcm = FCM(n_clusters=4, random_state=42)
+fcm.fit(scaled_data)
+df['FuzzyCluster'] = fcm.predict(scaled_data)
+
+# ✅ Step 4: Save full dataset with cluster labels
+df.to_csv("C:/Users/pavan/OneDrive/Desktop/Projects/Universities_with_all_clusters.csv", index=False)
+print("✅ Saved full dataset with cluster labels.")
+
+# ✅ Step 5: Generate summary reports for each method
+
+# Fuzzy
+fuzzy_summary = df.groupby('FuzzyCluster').mean(numeric_only=True)
+fuzzy_summary.to_csv("C:/Users/pavan/OneDrive/Desktop/Projects/FuzzyCluster_Summary.csv")
+
+# KMeans
+kmeans_summary = df.groupby('KMeansCluster').mean(numeric_only=True)
+kmeans_summary.to_csv("C:/Users/pavan/OneDrive/Desktop/Projects/KMeansCluster_Summary.csv")
+
+# Hierarchical
+hier_summary = df.groupby('HierCluster').mean(numeric_only=True)
+hier_summary.to_csv("C:/Users/pavan/OneDrive/Desktop/Projects/HierCluster_Summary.csv")
+
+# DBSCAN (excluding noise)
+dbscan_summary = df[df['DBSCAN_Tuned'] != -1].groupby('DBSCAN_Tuned').mean(numeric_only=True)
+dbscan_summary.to_csv("C:/Users/pavan/OneDrive/Desktop/Projects/DBSCANCluster_Summary.csv")
+
+print("📊 Cluster summaries saved for: Fuzzy, KMeans, Hierarchical, and DBSCAN.")
+
+# ✅ Step 6: Prepare for ML
+X = df.drop(columns=['Graduation rate'])  # Features
+y = df['Graduation rate']                 # Target
+print("\n✅ ML-ready data is prepared.")
+print(f"X shape: {X.shape} | y shape: {y.shape}")
