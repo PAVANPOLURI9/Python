@@ -1,0 +1,14 @@
+# Load the data
+data <- read.csv("C:/Users/pavan/OneDrive/Desktop/Projects/ToyotaCorolla.csv", fileEncoding = "latin1")
+
+# Use only relevant columns for dummy conversion
+library(dplyr)
+library(fastDummies)
+
+# Create dummy variables for Fuel_Type and Color
+data_dummies <- dummy_cols(data, select_columns = c("Fuel_Type", "Color"), remove_first_dummy = TRUE)
+
+# View one row to understand the dummy values
+print(data_dummies[1, c("Fuel_Type", "Fuel_Type_Diesel", "Fuel_Type_Petrol",
+                        "Color", grep("Color_", names(data_dummies), value = TRUE))])
+                        
