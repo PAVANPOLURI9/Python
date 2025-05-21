@@ -1,0 +1,18 @@
+import yfinance as yf
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Step 1: Download Apple stock data from 2010 to 2024
+apple = yf.download('AAPL', start='2010-01-01', end='2024-12-31')
+
+# Keep only the 'Close' price
+apple = apple[['Close']].rename(columns={'Close': 'Price'})
+
+# Reset index so Date becomes a column
+apple.reset_index(inplace=True)
+
+# Save to CSV
+apple.to_csv('C:/AI/Python/Time series/Apple_stock_2010_2024.csv', index=False)
+
+# Display a few rows
+print(apple.head())
