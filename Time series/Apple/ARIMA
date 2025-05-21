@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
+from sklearn.metrics import mean_squared_error
+
+# 🔹 Step 1: Load Apple stock data
+df = pd.read_csv("C:/AI/Python/Time series/Apple/Apple_stock_2010_2024.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# 🔹 Step 2: Fit ARIMA(1,1,1)
+model = ARIMA(df['Price'], order=(1, 1, 1))
+model_fit = model.fit()
+
+# 🔹 Step 3: Forecast next 30 days
+forecast = model_fit.forecast(steps=30)
+forecast_index = pd.date_range(start=df.index[-1] + pd.Timedelta(days=1), periods=30, freq='D')
+
+# 🔹 Step 4: Backtest - get actual last 30 values
+actual = df['Price'].iloc[-30:]
+actual.index = forecast_index  # align for RMSE
+
+# 🔹 Step 5: Calculate RMSE
+rmse = np.sqrt(mean_squared_error(actual, forecast))
+print(f"\n📊 ARIMA(1,1,1) RMSE: {rmse:.2f}\n")
+
+# 🔹 Step 6: Plot recent history + forecast
+recent_data = df['Price'].iloc[-180:]
+
+plt.figure(figsize=(12, 6))
+plt.plot(recent_data, label='Last 180 Days - Historical Price', color='blue')
+plt.plot(forecast_index, forecast, label='Forecast (Next 30 Days)', color='red')
+plt.title("Apple Stock Forecast using ARIMA(1,1,1)")
+plt.xlabel("Date")
+plt.ylabel("Price (USD)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
