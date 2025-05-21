@@ -1,0 +1,44 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load data
+df = pd.read_csv("C:/AI/Python/Time series/Apple_stock_2010_2024.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# Calculate EMAs
+df['EMA_20'] = df['Price'].ewm(span=20, adjust=False).mean()
+df['EMA_200'] = df['Price'].ewm(span=200, adjust=False).mean()
+
+# Generate signal: 1 (buy) if EMA_20 > EMA_200, -1 (sell) if EMA_20 < EMA_200
+df['Signal'] = 0
+df.loc[df['EMA_20'] > df['EMA_200'], 'Signal'] = 1
+df.loc[df['EMA_20'] < df['EMA_200'], 'Signal'] = -1
+
+# Find crossover points
+df['Crossover'] = df['Signal'].diff()
+golden_cross = df[df['Crossover'] == 2]   # -1 to 1
+death_cross = df[df['Crossover'] == -2]   # 1 to -1
+
+# Plot everything
+plt.figure(figsize=(14, 6))
+plt.plot(df['Price'], label='Apple Price', color='blue', alpha=0.5)
+plt.plot(df['EMA_20'], label='20-Day EMA', color='orange')
+plt.plot(df['EMA_200'], label='200-Day EMA', color='purple')
+
+# Mark Golden Crosses (Buy)
+plt.scatter(golden_cross.index, golden_cross['Price'], marker='^', color='green', label='Buy (Golden Cross)', s=100)
+
+# Mark Death Crosses (Sell)
+plt.scatter(death_cross.index, death_cross['Price'], marker='v', color='red', label='Sell (Death Cross)', s=100)
+
+# Final chart setup
+plt.title("Apple Stock with Buy/Sell Signals from EMA Crossovers")
+plt.xlabel("Date")
+plt.ylabel("Price (USD)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
