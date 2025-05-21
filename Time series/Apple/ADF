@@ -1,0 +1,19 @@
+from statsmodels.tsa.stattools import adfuller
+import pandas as pd
+
+# Load data
+df = pd.read_csv("C:/AI/Python/Time series/Apple_stock_2010_2024.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# ADF Test
+adf_result = adfuller(df['Price'])
+
+print("📊 Augmented Dickey-Fuller Test Results:")
+print(f"ADF Statistic: {adf_result[0]}")
+print(f"p-value: {adf_result[1]}")
+print("Critical Values:")
+for key, value in adf_result[4].items():
+    print(f"   {key}: {value}")
