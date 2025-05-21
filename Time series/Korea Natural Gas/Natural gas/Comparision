@@ -1,0 +1,89 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.ar_model import AutoReg
+from statsmodels.tsa.arima.model import ARIMA
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+
+# 🔹 Load your file (make sure this path is correct)
+csv_path = "C:/AI/Python/Time series/Korea Natural Gas/Natural gas/Gas sales with temperature.csv"
+df = pd.read_csv(csv_path)
+
+# 🔹 Combine Year + Month to datetime
+df['Date'] = pd.to_datetime(df[['Year', 'Month']].astype(str).agg('-'.join, axis=1), format='%Y-%m')
+df.set_index('Date', inplace=True)
+df = df.sort_index()
+
+# 🔹 Use 'Sum' column for gas sales (change if needed)
+df = df[['Sum']].dropna()
+df.columns = ['Gas_Sales']
+
+# 🔹 Forecast horizon
+forecast_periods = 12
+forecast_index = pd.date_range(start=df.index[-1] + pd.DateOffset(months=1), periods=forecast_periods, freq='MS')
+
+# Use full data for modeling
+series = df['Gas_Sales']
+
+# 🔹 AR model
+ar_model = AutoReg(series, lags=12).fit()
+ar_forecast = ar_model.predict(start=len(series), end=len(series) + forecast_periods - 1)
+
+# 🔹 MA model (approximated as ARIMA(0,0,q))
+ma_model = ARIMA(series, order=(0, 0, 12)).fit()
+ma_forecast = ma_model.forecast(steps=forecast_periods)
+
+# 🔹 ARIMA model
+arima_model = ARIMA(series, order=(1, 1, 1)).fit()
+arima_forecast = arima_model.forecast(steps=forecast_periods)
+
+# 🔹 SARIMA model
+sarima_model = SARIMAX(series, order=(1, 1, 1), seasonal_order=(1, 1, 1, 12)).fit()
+sarima_forecast = sarima_model.forecast(steps=forecast_periods)
+
+# ======================
+# 📈 INDIVIDUAL PLOTS
+# ======================
+plt.figure(figsize=(14, 8))
+
+plt.subplot(2, 2, 1)
+plt.plot(series[-48:], label='Actual')
+plt.plot(forecast_index, ar_forecast, label='AR Forecast', color='green')
+plt.title('AutoRegressive (AR) Model')
+plt.legend()
+
+plt.subplot(2, 2, 2)
+plt.plot(series[-48:], label='Actual')
+plt.plot(forecast_index, ma_forecast, label='MA Forecast', color='purple')
+plt.title('Moving Average (MA) Model')
+plt.legend()
+
+plt.subplot(2, 2, 3)
+plt.plot(series[-48:], label='Actual')
+plt.plot(forecast_index, arima_forecast, label='ARIMA Forecast', color='red')
+plt.title('ARIMA(1,1,1) Model')
+plt.legend()
+
+plt.subplot(2, 2, 4)
+plt.plot(series[-48:], label='Actual')
+plt.plot(forecast_index, sarima_forecast, label='SARIMA Forecast', color='orange')
+plt.title('SARIMA(1,1,1)(1,1,1,12) Model')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# ======================
+# 🔁 ARIMA vs SARIMA Comparison
+# ======================
+plt.figure(figsize=(10, 5))
+plt.plot(series[-48:], label='Actual', color='blue')
+plt.plot(forecast_index, arima_forecast, label='ARIMA Forecast', color='red')
+plt.plot(forecast_index, sarima_forecast, label='SARIMA Forecast', color='orange')
+plt.title('ARIMA vs SARIMA Comparison')
+plt.xlabel('Date')
+plt.ylabel('Gas Sales')
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()

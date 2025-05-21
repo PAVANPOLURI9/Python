@@ -1,0 +1,82 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from pmdarima import auto_arima
+from sklearn.metrics import mean_squared_error
+import warnings
+import os
+
+# 🔕 Suppress FutureWarnings from sklearn
+warnings.filterwarnings("ignore", category=FutureWarning)
+
+# ✅ File path (use double backslashes \\ or forward slashes /)
+csv_path = "C:/AI/Python/Time series/Korea Natural Gas/Natural gas/Gas sales with temperature.csv"
+
+# 🔹 Load dataset
+df = pd.read_csv(csv_path)
+
+# 🔹 Preview column names to help debugging
+print("🧾 Available columns:", df.columns.tolist())
+
+# 🔹 Convert Year + Month to datetime
+df['Date'] = pd.to_datetime(df[['Year', 'Month']].astype(str).agg('-'.join, axis=1), format='%Y-%m')
+df.set_index('Date', inplace=True)
+df = df.sort_index()
+
+# 🔹 Use the total gas sales column — change this if needed
+df = df[['Sum']].dropna()  # If 'Sum' is not the right column, replace with the correct one
+df.columns = ['Gas_Sales']
+
+# 🔹 Train-test split: last 12 months as test
+train = df['Gas_Sales'].iloc[:-12]
+test = df['Gas_Sales'].iloc[-12:]
+
+# 🔹 Auto ARIMA - optimized
+model = auto_arima(
+    train,
+    seasonal=True,
+    m=12,  # monthly seasonality
+    stepwise=True,
+    trace=True,
+    suppress_warnings=True,
+    max_p=3,
+    max_q=3,
+    max_P=2,
+    max_Q=2,
+    max_order=8,
+    d=None,
+    D=1
+)
+
+# 🔹 Forecast next 12 months
+forecast = model.predict(n_periods=12)
+forecast_index = pd.date_range(start=test.index[-1] + pd.DateOffset(months=1), periods=12, freq='MS')
+
+# 🔹 RMSE
+rmse = np.sqrt(mean_squared_error(test, forecast))
+print(f"\n📊 Forecast RMSE: {rmse:.2f}")
+
+# 🔹 Results table
+results = pd.DataFrame({
+    'Date': forecast_index,
+    'Forecasted Sales': forecast,
+    'Actual Sales': test.values,
+    'Error': forecast - test.values
+}).set_index('Date')
+
+# 🔹 Plot forecast vs. recent history
+plt.figure(figsize=(12, 6))
+plt.plot(df['Gas_Sales'].iloc[-48:], label="Last 4 Years - Actual", color='blue')
+plt.plot(results.index, results['Forecasted Sales'], label="Forecast (Next 12 Months)", color='orange')
+plt.title("Korea Natural Gas Sales Forecast (Auto ARIMA)")
+plt.xlabel("Date")
+plt.ylabel("Gas Sales Volume")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# 🔹 Export forecast to CSV
+output_path = os.path.splitext(csv_path)[0] + "_forecast_output.csv"
+results.to_csv(output_path)
+print(f"\n📁 Forecast results saved to: {output_path}")
