@@ -1,0 +1,26 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load and prepare data
+df = pd.read_csv("C:/AI/Python/Time series/Apple_stock_2010_2024.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# Calculate EMAs
+df['EMA_20'] = df['Price'].ewm(span=20, adjust=False).mean()
+df['EMA_200'] = df['Price'].ewm(span=200, adjust=False).mean()
+
+# Plot Price + EMAs
+plt.figure(figsize=(14, 6))
+plt.plot(df['Price'], label='Apple Price', color='blue', alpha=0.5)
+plt.plot(df['EMA_20'], label='20-Day EMA (Short-Term)', color='orange')
+plt.plot(df['EMA_200'], label='200-Day EMA (Long-Term)', color='purple')
+plt.title("Apple Stock with 20 & 200-Day Exponential Moving Averages")
+plt.xlabel("Date")
+plt.ylabel("Price (USD)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
