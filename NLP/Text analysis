@@ -1,0 +1,80 @@
+import fitz  # PyMuPDF
+import nltk
+from nltk.tokenize import RegexpTokenizer
+from nltk.corpus import stopwords
+from sklearn.feature_extraction.text import CountVectorizer
+from docx import Document
+import matplotlib.pyplot as plt
+import pandas as pd
+
+nltk.download('stopwords')
+
+def process_pdf_nlp_to_word(pdf_path, output_docx_path):
+    # Custom stopwords
+    custom_stopwords = {
+        "a", "an", "the", "is", "are", "in", "on", "at", "of", "and", "or", "to",
+        "for", "with", "that", "this", "it", "as", "by", "from", "was", "were", "be",
+        "been", "has", "have", "had"
+    }
+
+    # Step 1: Extract text from PDF
+    doc = fitz.open(pdf_path)
+    text = ""
+    for page in doc:
+        text += page.get_text()
+
+    # Step 2: Tokenization using regex
+    tokenizer = RegexpTokenizer(r'\w+')
+    tokens = tokenizer.tokenize(text.lower())
+
+    # Step 3: Remove unwanted words
+    meaningful_tokens = [word for word in tokens if word not in custom_stopwords and word not in stopwords.words('english')]
+    meaningless_tokens = [word for word in tokens if word not in meaningful_tokens]
+
+    # Step 4: Bag of Words
+    text_data = [" ".join(meaningful_tokens)]
+    cv = CountVectorizer()
+    X = cv.fit_transform(text_data)
+    bow_tokens = cv.get_feature_names_out()
+    bow_matrix = X.toarray()
+
+    # Visualize Top 20 Most Frequent Words
+    freq_df = pd.DataFrame({
+        'word': bow_tokens,
+        'count': bow_matrix[0]
+    }).sort_values(by='count', ascending=False).head(20)
+
+    plt.figure(figsize=(10, 6))
+    plt.bar(freq_df['word'], freq_df['count'])
+    plt.xticks(rotation=45, ha='right')
+    plt.title("Top 20 Most Frequent Words (Bag of Words)")
+    plt.xlabel("Words")
+    plt.ylabel("Frequency")
+    plt.tight_layout()
+    plt.savefig("C:/Users/pavan/OneDrive/Desktop/Projects/bow_bargraph.png")
+    plt.close()
+
+    # Step 5: Export to Word Document
+    docx = Document()
+    docx.add_heading("Bag of Words Analysis", level=1)
+
+    docx.add_heading("1. Meaningful Words (Bag of Words)", level=2)
+    docx.add_paragraph(", ".join(bow_tokens))
+
+    docx.add_heading("2. Count of Non-Meaningful Words", level=2)
+    docx.add_paragraph(str(len(meaningless_tokens)))
+
+    docx.add_heading("3. Total Words", level=2)
+    docx.add_paragraph(str(len(tokens)))
+
+    docx.add_heading("4. Bar Graph of Top 20 Words", level=2)
+    docx.add_paragraph("See the saved image at: bow_bargraph.png")
+
+    docx.save(output_docx_path)
+
+# ✅ Run this block
+pdf_path = "C:/Users/pavan/OneDrive/Desktop/Projects/Medical research.pdf"
+output_docx_path = "C:/Users/pavan/OneDrive/Desktop/Projects/Text_Analysis_Output.docx"
+
+process_pdf_nlp_to_word(pdf_path, output_docx_path)
+print("✅ Document and graph saved successfully!")
