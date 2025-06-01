@@ -1,0 +1,34 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.stattools import adfuller
+
+# Load data using correct path
+df = pd.read_csv("C:/AI/Python/Time series/Apple/Apple_stock_2010_2024.csv")
+
+# Prepare date and numeric format
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# Apply first-order differencing
+df['Price_Diff'] = df['Price'] - df['Price'].shift(1)
+df.dropna(subset=['Price_Diff'], inplace=True)
+
+# Plot differenced series
+plt.figure(figsize=(12, 5))
+df['Price_Diff'].plot(title='Differenced Apple Stock Price (1st Order)')
+plt.xlabel('Date')
+plt.ylabel('Price Change')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Run ADF test on differenced series
+result_diff = adfuller(df['Price_Diff'])
+print("📊 ADF Test After First-Order Differencing:")
+print(f"ADF Statistic: {result_diff[0]}")
+print(f"p-value: {result_diff[1]}")
+print("Critical Values:")
+for key, value in result_diff[4].items():
+    print(f"   {key}: {value}")
