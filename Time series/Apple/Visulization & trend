@@ -1,0 +1,22 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Step 1: Load the Apple stock CSV
+df = pd.read_csv("C:/AI/Python/Time series/Apple_stock_2010_2024.csv")
+
+# Step 2: Convert 'Date' to datetime format
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# Step 4: Plot the stock price
+plt.figure(figsize=(12, 5))
+df['Price'].plot(color='blue')
+plt.title("Apple Stock Price (2010–2024)")
+plt.xlabel("Date")
+plt.ylabel("Price (USD)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
