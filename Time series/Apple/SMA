@@ -1,0 +1,47 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load and prepare the data
+df = pd.read_csv("C:/AI/Python/Time series/Apple_stock_2010_2024.csv")
+df['Date'] = pd.to_datetime(df['Date'])
+df.set_index('Date', inplace=True)
+df['Price'] = pd.to_numeric(df['Price'], errors='coerce')
+df.dropna(subset=['Price'], inplace=True)
+
+# Calculate SMAs
+df['SMA_20'] = df['Price'].rolling(window=20).mean()
+df['SMA_200'] = df['Price'].rolling(window=200).mean()
+
+# Identify crossovers
+df['Signal'] = 0
+df.loc[df['SMA_20'] > df['SMA_200'], 'Signal'] = 1
+df.loc[df['SMA_20'] < df['SMA_200'], 'Signal'] = -1
+
+# Find crossover points (when signal changes)
+df['Crossover'] = df['Signal'].diff()
+
+# Golden Cross = +2 (from -1 to +1)
+golden_crosses = df[df['Crossover'] == 2]
+# Death Cross = -2 (from +1 to -1)
+death_crosses = df[df['Crossover'] == -2]
+
+# 📈 Plot all data
+plt.figure(figsize=(14, 6))
+plt.plot(df['Price'], label='Apple Price', color='blue', alpha=0.5)
+plt.plot(df['SMA_20'], label='20-Day SMA', color='green')
+plt.plot(df['SMA_200'], label='200-Day SMA', color='red')
+
+# 🔸 Mark Golden Crosses
+plt.scatter(golden_crosses.index, golden_crosses['Price'], label='Golden Cross', color='gold', marker='^', s=100)
+
+# 🔻 Mark Death Crosses
+plt.scatter(death_crosses.index, death_crosses['Price'], label='Death Cross', color='black', marker='v', s=100)
+
+# 🧾 Final touches
+plt.title("Apple Stock with SMA Crossovers (Golden & Death Crosses)")
+plt.xlabel("Date")
+plt.ylabel("Price (USD)")
+plt.legend()
+plt.grid(True)
+plt.tight_layout()
+plt.show()
