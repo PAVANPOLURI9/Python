@@ -1,0 +1,48 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
+from statsmodels.tsa.stattools import adfuller
+
+# Step 1: Simulate weekly delivery data
+np.random.seed(1)
+weeks = pd.date_range(start='2022-01-01', periods=104, freq='W')
+trend = np.linspace(500, 800, 104)  # increasing trend
+seasonality = 100 * np.sin(2 * np.pi * np.arange(104) / 52)  # annual seasonality
+noise = np.random.normal(0, 30, 104)  # random noise
+volume = trend + seasonality + noise
+
+df = pd.DataFrame({'Week': weeks, 'Deliveries': volume})
+df.set_index('Week', inplace=True)
+
+# Step 2: Plot raw time series
+plt.figure(figsize=(12, 4))
+df['Deliveries'].plot(title='Weekly Deliveries (Logistics)', color='steelblue')
+plt.ylabel("Delivery Volume")
+plt.grid(True)
+plt.show()
+
+# Step 3: Decompose time series
+decomp = seasonal_decompose(df['Deliveries'], model='additive', period=52)
+decomp.plot()
+plt.suptitle("Time Series Decomposition (Additive Model)", fontsize=14)
+plt.tight_layout()
+plt.show()
+
+# Step 4: ADF Test for Stationarity
+print("\n--- ADF Test for Stationarity ---")
+adf_result = adfuller(df['Deliveries'])
+print(f"ADF Statistic: {adf_result[0]:.4f}")
+print(f"p-value: {adf_result[1]:.4f}")
+if adf_result[1] < 0.05:
+    print("✔️ The time series is stationary.")
+else:
+    print("❌ The time series is not stationary. Differencing is needed.")
+
+# Step 5: Differencing if needed
+df['Diff'] = df['Deliveries'] - df['Deliveries'].shift(1)
+
+plt.figure(figsize=(12, 4))
+df['Diff'].dropna().plot(title='Differenced Series (to remove trend)')
+plt.grid(True)
+plt.show()
