@@ -1,0 +1,72 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Step 1: Generate input values
+x = np.linspace(-10, 10, 400)
+
+# Step 2: Define activation functions
+def relu(x):
+    return np.maximum(0, x)
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def tanh(x):
+    return np.tanh(x)
+
+# Step 3: Apply activation functions to all x
+relu_vals = relu(x)
+sigmoid_vals = sigmoid(x)
+tanh_vals = tanh(x)
+
+# Step 4: Pick sample points for output comparison
+sample_points = np.array([-10, -5, 0, 5, 10])
+
+print("\n📌 Sample Activation Function Outputs:\n")
+
+print("Input:", sample_points)
+
+print("\n🔴 ReLU Output:")
+print(relu(sample_points))
+
+print("\n🟢 Sigmoid Output:")
+print(sigmoid(sample_points))
+
+print("\n🔵 Tanh Output:")
+print(tanh(sample_points))
+
+# Step 5: Plot all 3 activation functions
+plt.figure(figsize=(15, 4))
+
+# ReLU Plot
+plt.subplot(1, 3, 1)
+plt.plot(x, relu_vals, color='red')
+plt.title("ReLU Activation")
+plt.grid(True)
+plt.axhline(0, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--')
+plt.xlabel("Input")
+plt.ylabel("Output")
+
+# Sigmoid Plot
+plt.subplot(1, 3, 2)
+plt.plot(x, sigmoid_vals, color='green')
+plt.title("Sigmoid Activation")
+plt.grid(True)
+plt.axhline(0.5, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--')
+plt.xlabel("Input")
+plt.ylabel("Output")
+
+# Tanh Plot
+plt.subplot(1, 3, 3)
+plt.plot(x, tanh_vals, color='blue')
+plt.title("Tanh Activation")
+plt.grid(True)
+plt.axhline(0, color='gray', linestyle='--')
+plt.axvline(0, color='gray', linestyle='--')
+plt.xlabel("Input")
+plt.ylabel("Output")
+
+plt.tight_layout()
+plt.show()
