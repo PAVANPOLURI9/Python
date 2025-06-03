@@ -1,0 +1,64 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Step 1: Simulate the data
+np.random.seed(42)
+temperature = np.linspace(0, 40, 100)
+true_weight = 2.5
+true_bias = 5
+noise = np.random.normal(0, 4, size=100)
+energy_consumption = true_weight * temperature + true_bias + noise
+
+# Step 2: Initialize parameters
+w = 0.0  # start with random or zero
+b = 0.0
+lr = 0.0005  # learning rate
+epochs = 1000
+
+loss_history = []
+
+# Step 3: Gradient Descent Loop
+for epoch in range(epochs):
+    # Prediction
+    y_pred = w * temperature + b
+    
+    # Compute loss (MSE)
+    error = y_pred - energy_consumption
+    loss = np.mean(error**2)
+    loss_history.append(loss)
+
+    # Gradients
+    dw = 2 * np.mean(temperature * error)
+    db = 2 * np.mean(error)
+    
+    # Update parameters
+    w -= lr * dw
+    b -= lr * db
+
+    # Print every 100 epochs
+    if epoch % 100 == 0:
+        print(f"Epoch {epoch}: Loss = {loss:.2f}, w = {w:.4f}, b = {b:.4f}")
+
+# Final learned values
+print(f"\n✅ Final learned weight: {w:.4f}, bias: {b:.4f}")
+
+# Step 4: Plot loss reduction over time
+plt.figure(figsize=(10,5))
+plt.plot(loss_history, color='green')
+plt.title("Loss Reduction Over Epochs")
+plt.xlabel("Epoch")
+plt.ylabel("Mean Squared Error (Loss)")
+plt.grid(True)
+plt.show()
+
+# Step 5: Plot final prediction
+final_pred = w * temperature + b
+plt.figure(figsize=(10,5))
+plt.scatter(temperature, energy_consumption, label="Actual")
+plt.plot(temperature, final_pred, color='red', label="Learned Prediction")
+plt.title("Neuron Prediction After Learning")
+plt.xlabel("Temperature (°C)")
+plt.ylabel("Energy Consumption (kWh)")
+plt.legend()
+plt.grid(True)
+plt.show()
